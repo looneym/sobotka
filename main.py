@@ -23,8 +23,11 @@ class Host(Model):
 
 
 db.connect()
-db.create_tables([Host])  
 
+try:
+    db.create_tables([Host])  
+except peewee.OperationalError:
+	continue
 
 ubuntu = "ami-835b4efa"
 key_name = "boto_test"
@@ -68,6 +71,7 @@ def get_ssh_string(instance):
 	ssh_string += " "
 	ssh_string += "-i"
 	ssh_string += " "
+	ssh_string += "~/.ssh/"
 	ssh_string += key_name
 	ssh_string += ".pem"
 	ssh_string += " "
