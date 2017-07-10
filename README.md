@@ -5,7 +5,7 @@
 
 ### Description 
 
-Capistrano-inspired confiuration tool for creating containerized development environments on AWS. Named in honor of Frank Sobotka
+Capistrano-inspired configuration tool for creating containerized development environments on AWS. Named in honor of Frank Sobotka
 from The Wire. 
 
 Sobotka handles:
@@ -56,7 +56,7 @@ Running `python main.py` will drop you into an IPython interactive terminal with
 - `create_project()` which will create a new project from a `manifest.xml` file in the current directory (you can navigate with `ls`
 and `cd` as in a normal shell to move to any location where a manifest file exists)
 - `list_projects()` prints a human readable list of current projects you have created
-= `get_projects()` returns an iterable 
+- `get_projects()` returns an iterable 
 
 #### 3. Creating and working with projects
 
@@ -86,8 +86,9 @@ Sobotka is still in very early development. The following features are planned:
 - File sync over scp so that users can edit files locally and immediatly have changes pushed to the remote host
 - Correctly configure local storage for the program
 - Make available as a package via pip
-- AWS module enhancements - list all instances and more
+- AWS module enhancements - list all instances, delete instances directly etc.
 - General console improvements such as help menus and a better prompt
+- Support for non-interacitve use in scripts
 
 
 
