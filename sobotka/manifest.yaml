@@ -1,5 +1,5 @@
 project:
-    shortname: my_app
+    shortname: docker-compose-hello-world
     repo_url: https://github.com/looneym/docker-compose-hello-world.git
     code_dir: docker-compose-hello-world
     key_file: ~/.ssh/boto_test.pem
