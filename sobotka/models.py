@@ -92,11 +92,16 @@ class Project(Model):
             fabric_util.compose_logs(
                     self.host_string, 
                     self.key_file,
-                    self.code_dir)                
+                    self.code_dir)
 
+    @classmethod
+    def list_all(cls):
+        projects = []
+        for project in cls.select():
+            projects.append(project)
+        return projects                       
 
-
-               
+             
 ## Gonna need a better way of managing the DB
 ## Probably store in in the user's app data folder or something
 db = SqliteDatabase('sobotka.db')
