@@ -14,6 +14,13 @@ from fabric.contrib.console import confirm
 from fabric.api import env, run, cd
 import fabric
 
+def configure(project):
+    global env
+    env.host_string = project.host_string
+    env.key_filename = project.key_file
+    env.output_prefix = False
+
+
 def bootstrap_compose(host_string, key_file):
     env.host_string = host_string
     env.key_filename = key_file
@@ -63,8 +70,9 @@ def remove_dir(host_string, key_file, code_dir):
     run("rm -rf {}".format(code_dir))        
 
 
-
-
+def execute_arbitrary_command(project, command):
+    configure(project)
+    run(command)
 
 
 
