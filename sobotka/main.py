@@ -22,7 +22,7 @@ def create_project():
         hostname = instance.public_dns_name,
         instance_id = instance.id,
         username = config["project"]["username"],
-        ssh_string = helpers.get_ssh_string(instance, config["project"]["instance"]["key_name"]),
+        ssh_string = helpers.get_ssh_string(instance, config["project"]["key_file"]),
         host_string = helpers.get_host_string(instance),
         key_file = config["project"]["key_file"],
         repo_url = config["project"]["repo_url"],   
