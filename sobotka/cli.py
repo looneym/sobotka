@@ -10,6 +10,14 @@ parser = argparse.ArgumentParser(description='Sobotka is kewl')
 parser.add_argument('action', default=False, nargs='?')
 parser.add_argument('command', default=None, nargs='?')
 
+def sync():
+    project = get_project_from_local_conf()
+
+    file_sync_util.sync_directory(
+        host = project.shortname,
+        remote_dir = project.code_dir
+        )
+
 def get_project_from_local_conf():
     local_conf = load_local_conf()
     project_id = local_conf["project_id"]
@@ -101,7 +109,9 @@ elif args.action == "info":
 elif args.action == "ssh":
     ssh()
 elif args.action == "exec":
-    execute_command()     
+    execute_command() 
+elif args.action == "sync":
+    sync()       
 else:
     print("Not doing anything")    
 
