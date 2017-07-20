@@ -1,5 +1,5 @@
 import models
-from lib import aws_util, fabric_util, helpers
+from lib import aws_util, fabric_util, helpers, file_sync_util, ssh_config_util
 from IPython import embed
 import yaml
 import argparse
@@ -9,7 +9,6 @@ Project = models.Project
 parser = argparse.ArgumentParser(description='Sobotka is kewl')
 parser.add_argument('action', default=False, nargs='?')
 parser.add_argument('command', default=None, nargs='?')
-
 
 def get_project_from_local_conf():
     local_conf = load_local_conf()
@@ -72,6 +71,13 @@ def create_project():
     store_local_conf(project.id)
     print("Successfully created project")
     print(project)
+
+    ssh_config_util.add_host(
+        name = config["project"]["shortname"], 
+        user = config["project"]["username"], 
+        hostname = instance.public_dns_name, 
+        key_file = config["project"]["key_file"])
+
     return project
 
 def print_info():
@@ -95,7 +101,7 @@ elif args.action == "info":
 elif args.action == "ssh":
     ssh()
 elif args.action == "exec":
-    execute_command()        
+    execute_command()     
 else:
     print("Not doing anything")    
 

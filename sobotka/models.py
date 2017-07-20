@@ -1,5 +1,6 @@
 import os
 from peewee import * 
+from subprocess import call
 
 from lib import aws_util, fabric_util
 
@@ -24,6 +25,7 @@ class Project(Model):
         aws_util.find_instance(self.instance_id).terminate()  
         q = self.delete()
         q.execute() 
+        # TODO: remove host from ~/.ssh/config
 
     # refetch and build the project
     def reload(self):
@@ -34,7 +36,7 @@ class Project(Model):
 
     # open interactive ssh session
     def connect(self):
-        os.system(self.ssh_string)
+        call(["ssh", self.shortname])
 
     # returns a dictionary representing the attributes of the object
     def attributes(self):
