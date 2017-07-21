@@ -20,11 +20,8 @@ def configure(project):
     env.key_filename = project.key_file
     env.output_prefix = False
 
-
-def bootstrap_compose(host_string, key_file):
-    env.host_string = host_string
-    env.key_filename = key_file
-    env.output_prefix = False
+def bootstrap_compose(project):
+    configure(project)
     run("curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -")
     run("sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable'")
     run("sudo apt-get update")
@@ -37,11 +34,9 @@ def pull_repo(host_string, key_file, repo_url):
     env.output_prefix = False
     run("git clone {}".format(repo_url))    
 
-def compose_up(host_string, key_file, code_dir):
-    env.host_string = host_string
-    env.key_filename = key_file
-    env.output_prefix = False
-    with cd(code_dir):
+def compose_up(project):
+    configure(project)
+    with cd(project.code_dir):
         run("sudo docker-compose up -d")
 
 def compose_stop(host_string, key_file, code_dir):

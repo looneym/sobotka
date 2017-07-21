@@ -88,6 +88,15 @@ def create_project():
 
     return project
 
+
+def run():
+    project = get_project_from_local_conf()
+    fabric_util.compose_up(project)
+
+def bootstrap():
+    project = get_project_from_local_conf()
+    fabric_util.bootstrap_compose(project)     
+
 def print_info():
     project = get_project_from_local_conf()
     print(project)
@@ -111,7 +120,11 @@ elif args.action == "ssh":
 elif args.action == "exec":
     execute_command() 
 elif args.action == "sync":
-    sync()       
+    sync()    
+elif args.action == "bootstrap":
+    bootstrap()  
+elif args.action == "run":
+    run()       
 else:
     print("Not doing anything")    
 
