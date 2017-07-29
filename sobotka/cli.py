@@ -109,7 +109,7 @@ def execute_command():
 args = parser.parse_args()
 print(args)
 
-if args.action == "up":
+if args.action == "init":
     create_project()
 elif args.action == "list":
     Project.list_all()
