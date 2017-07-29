@@ -3,6 +3,7 @@ from lib import aws_util, fabric_util, helpers, file_sync_util, ssh_config_util
 from IPython import embed
 import yaml
 import argparse
+import os 
 
 Project = models.Project
 
@@ -103,6 +104,7 @@ def execute_command():
 def destroy_project():
     project = get_project_from_local_conf()
     project.destroy()
+    os.system("rm .local_conf.yaml")
 
 
 def sync():
