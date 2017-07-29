@@ -10,13 +10,6 @@ parser = argparse.ArgumentParser(description='Sobotka is kewl')
 parser.add_argument('action', default=False, nargs='?')
 parser.add_argument('command', default=None, nargs='?')
 
-def sync():
-    project = get_project_from_local_conf()
-
-    file_sync_util.sync_directory(
-        host = project.shortname,
-        remote_dir = project.code_dir
-        )
 
 def get_project_from_local_conf():
     local_conf = load_local_conf()
@@ -107,12 +100,26 @@ def execute_command():
     fabric_util.execute_arbitrary_command(project, command)    
 
 
-def destroy_project()
+def destroy_project():
     project = get_project_from_local_conf()
     project.destroy()
 
-def watch_directory()
-    pass
+
+def sync():
+    project = get_project_from_local_conf()
+
+    file_sync_util.sync_directory(
+        host = project.shortname,
+        remote_dir = project.code_dir
+        )
+
+def watch_directory():
+    project = get_project_from_local_conf()
+
+    file_sync_util.watch_directory(
+        host = project.shortname,
+        remote_dir = project.code_dir
+        )
 
 args = parser.parse_args()
 print(args)
