@@ -2,7 +2,7 @@ import os
 from peewee import * 
 from subprocess import call
 
-from lib import aws_util, fabric_util
+from lib import aws_util, fabric_util, ssh_config_util
 
 class Project(Model):
     shortname = CharField()
@@ -23,9 +23,9 @@ class Project(Model):
     # Nuke the whole thing
     def destroy(self):
         aws_util.find_instance(self.instance_id).terminate()  
+        ssh_config_util.remove_host(self.shortname)
         q = self.delete()
         q.execute() 
-        # TODO: remove host from ~/.ssh/config
 
     # refetch and build the project
     def reload(self):

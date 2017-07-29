@@ -106,6 +106,14 @@ def execute_command():
     project = get_project_from_local_conf()
     fabric_util.execute_arbitrary_command(project, command)    
 
+
+def destroy_project()
+    project = get_project_from_local_conf()
+    project.destroy()
+
+def watch_directory()
+    pass
+
 args = parser.parse_args()
 print(args)
 
@@ -124,7 +132,11 @@ elif args.action == "sync":
 elif args.action == "bootstrap":
     bootstrap()  
 elif args.action == "run":
-    run()       
+    run()
+elif args.action == "destroy":
+    destroy_project()
+elif args.action == "watch":
+    watch_directory()                     
 else:
     print("Not doing anything")    
 

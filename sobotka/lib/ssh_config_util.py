@@ -10,3 +10,9 @@ def add_host(name, user, hostname, key_file):
         'IdentityFile': key_file
     })
     sconfig.write_to_ssh_config()
+
+
+def remove_host(name):
+    sconfig = StormParser(expanduser("~/.ssh/config"))
+    sconfig.delete_host("bastion.internal.ddintercom.io")
+    sconfig.write_to_ssh_config()
