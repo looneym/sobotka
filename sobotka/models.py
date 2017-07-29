@@ -100,8 +100,7 @@ class Project(Model):
     def list_all(cls):
         projects = []
         for project in cls.select():
-            projects.append(project)
-        return projects                       
+            print project
 
              
 ## Gonna need a better way of managing the DB
