@@ -110,18 +110,12 @@ def destroy_project():
 def push():
     project = get_project_from_local_conf()
 
-    file_sync_util.sync_directory(
-        host = project.shortname,
-        remote_dir = project.code_dir
-        )
+    file_sync_util.push_directory(project)
 
 def watch_directory():
     project = get_project_from_local_conf()
 
-    file_sync_util.watch_directory(
-        host = project.shortname,
-        remote_dir = project.code_dir
-        )
+    file_sync_util.watch_directory(project)
 
 args = parser.parse_args()
 print(args)

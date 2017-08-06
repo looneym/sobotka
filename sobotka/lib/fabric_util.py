@@ -46,6 +46,12 @@ def compose_stop(host_string, key_file, code_dir):
     with cd(code_dir):  
         run("sudo docker-compose stop")
 
+def compose_rebuild(project):
+    configure(project)
+    with cd(project.code_dir):  
+        run("sudo docker-compose stop")
+        run("sudo docker-compose up --build")
+
 def compose_logs(host_string, key_file, code_dir):
     env.host_string = host_string
     env.key_filename = key_file
@@ -68,6 +74,8 @@ def remove_dir(host_string, key_file, code_dir):
 def execute_arbitrary_command(project, command):
     configure(project)
     run(command)
+
+
 
 
 
