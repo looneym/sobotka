@@ -1,11 +1,13 @@
+from sys import exit
+import argparse
+import os 
+
+import yaml
+
 import models
 from lib import aws_util, fabric_util, helpers, file_sync_util, ssh_config_util
 from lib.HostsManager import HostsManager
-from IPython import embed
-import yaml
-import argparse
-import os 
-from sys import exit
+
 
 Project = models.Project
 
