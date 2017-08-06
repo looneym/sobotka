@@ -7,7 +7,8 @@ def add_host(name, user, hostname, key_file):
     sconfig.add_host(name, {
         'user': user,
         'hostname': hostname,
-        'IdentityFile': key_file
+        'IdentityFile': key_file,
+        "StrictHostKeyChecking": "no"
     })
     sconfig.write_to_ssh_config()
 
