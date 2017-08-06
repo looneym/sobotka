@@ -1,14 +1,3 @@
-## Right now this module file contains all the methods
-## for remotely executing commands on the host
-
-## This should be changed to multiple modules: one for 
-## git, one for docker-compose, one for general file operations
-## one for other build systems etc. 
-
-## The goal of these modules is to work as plugins, providing
-## a technology-specific implementation for behaviour
-## exposed by the Project model's methods
-
 from __future__ import with_statement
 from fabric.contrib.console import confirm
 from fabric.api import env, run, cd
@@ -26,13 +15,7 @@ def bootstrap_compose(project):
     run("sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable'")
     run("sudo apt-get update")
     run("sudo apt-get install -y docker-ce docker-compose")
-    run("sudo usermod -aG docker ${USER}")
-
-def pull_repo(host_string, key_file, repo_url):
-    env.host_string = host_string
-    env.key_filename = key_file
-    env.output_prefix = False
-    run("git clone {}".format(repo_url))    
+    run("sudo usermod -aG docker ${USER}")  
 
 def compose_up(project):
     configure(project)
@@ -51,13 +34,12 @@ def compose_rebuild(project):
     with cd(project.code_dir):  
         run("sudo docker-compose stop")
         run("sudo docker-compose up --build")
+    fabric.network.disconnect_all()     
 
-def compose_logs(host_string, key_file, code_dir):
-    env.host_string = host_string
-    env.key_filename = key_file
-    env.output_prefix = False
+def compose_logs(project):
+    configure(project)
     try: 
-        with cd(code_dir):  
+        with cd(project.code_dir):  
             run("sudo docker-compose logs -f")
     except KeyboardInterrupt:
         # Custom interrupt handler to close connection

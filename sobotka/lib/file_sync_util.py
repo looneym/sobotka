@@ -20,9 +20,9 @@ class MyEventHandler(FileSystemEventHandler):
     def on_any_event(self, event):
         print("Something's changed! Syncing directory with remote host")
         push_directory(self.project)
-        if self.project.docker_compose:
-            print("Rebuilding containers on remote host")
-            fabric_util.compose_rebuild(self.project)
+        # if self.project.docker_compose:
+        #     print("Rebuilding containers on remote host")
+        #     fabric_util.compose_rebuild(self.project)
         print("Done")
            
 def push_directory(project):

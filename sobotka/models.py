@@ -12,7 +12,6 @@ class Project(Model):
     ssh_string = CharField()
     host_string = CharField()
     key_file = CharField()
-    repo_url = CharField()
     code_dir = CharField()
     docker_compose = BooleanField()
 
@@ -26,13 +25,6 @@ class Project(Model):
         ssh_config_util.remove_host(self.shortname)
         q = self.delete()
         q.execute() 
-
-    # refetch and build the project
-    def reload(self):
-        self.stop()
-        fabric_util.remove_dir(self.code_dir)
-        self.pull_repo()    
-        self.up()
 
     # open interactive ssh session
     def connect(self):
@@ -50,20 +42,11 @@ class Project(Model):
     # TODO: add created at field
     def __repr__(self):
         return "[PROJECT] id: {}, " \
-               "repo: {} , shortname: {}, " \
+               "shortname: {}, " \
                "hostname: {} ".format(
                         self.id,
-                        self.repo_url,
                         self.shortname,
-                        self.hostname)    
-
-    # Git related operations, should be expanded to allow for other common operations  
-    def pull_repo(self):
-        fabric_util.pull_repo(
-            self.host_string,
-            self.key_file,
-            self.repo_url)         
-
+                        self.hostname)          
 
     # Generic high level methods for various tasks useful for interacting
     # with your project environment

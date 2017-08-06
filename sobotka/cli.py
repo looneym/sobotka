@@ -65,7 +65,6 @@ def create_project():
         ssh_string = helpers.get_ssh_string(instance, config["project"]["key_file"]),
         host_string = helpers.get_host_string(instance),
         key_file = config["project"]["key_file"],
-        repo_url = config["project"]["repo_url"],   
         code_dir=config["project"]["code_dir"],
         docker_compose=config["project"]["docker_compose"])
 
@@ -117,8 +116,11 @@ def watch_directory():
 
     file_sync_util.watch_directory(project)
 
+def get_logs():
+    project = get_project_from_local_conf()   
+    fabric_util.compose_logs(project)
+
 args = parser.parse_args()
-print(args)
 
 if args.action == "init":
     create_project()
@@ -139,7 +141,9 @@ elif args.action == "run":
 elif args.action == "destroy":
     destroy_project()
 elif args.action == "watch":
-    watch_directory()                     
+    watch_directory()    
+elif args.action == "logs":
+    get_logs()                       
 else:
     print("Not doing anything")    
 
