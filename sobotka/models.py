@@ -14,6 +14,7 @@ class Project(Model):
     key_file = CharField()
     code_dir = CharField()
     docker_compose = BooleanField()
+    ip = CharField()
 
     # return an instance object representing the EC2 host the project is running on 
     def get_instance(self):

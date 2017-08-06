@@ -1,9 +1,11 @@
 import models
 from lib import aws_util, fabric_util, helpers, file_sync_util, ssh_config_util
+from lib.HostsManager import HostsManager
 from IPython import embed
 import yaml
 import argparse
 import os 
+from sys import exit
 
 Project = models.Project
 
@@ -66,7 +68,8 @@ def create_project():
         host_string = helpers.get_host_string(instance),
         key_file = config["project"]["key_file"],
         code_dir=config["project"]["code_dir"],
-        docker_compose=config["project"]["docker_compose"])
+        docker_compose=config["project"]["docker_compose"],
+        ip=instance.public_ip_address)
 
     project.save()
     store_local_conf(project.id)
@@ -78,6 +81,10 @@ def create_project():
         user = config["project"]["username"], 
         hostname = instance.public_dns_name, 
         key_file = config["project"]["key_file"])
+
+
+    hosts_manager = HostsManager()
+    hosts_manager.add_entry(project.ip, project.shortname)
 
     return project
 
@@ -102,6 +109,8 @@ def execute_command():
 
 def destroy_project():
     project = get_project_from_local_conf()
+    hosts_manager = HostsManager()
+    hosts_manager.remove_entry(project.ip, project.shortname)
     project.destroy()
     os.system("rm .local_conf.yaml")
 
@@ -120,10 +129,19 @@ def get_logs():
     project = get_project_from_local_conf()   
     fabric_util.compose_logs(project)
 
+def has_sudo():
+    if os.getuid() == 0:
+        return True
+    else:
+        print("This operation requires elevated privelages, please try again with sudo")
+        exit(126)   
+
+
 args = parser.parse_args()
 
 if args.action == "init":
-    create_project()
+    if has_sudo():
+        create_project()
 elif args.action == "list":
     Project.list_all()
 elif args.action == "info":
@@ -139,7 +157,8 @@ elif args.action == "bootstrap":
 elif args.action == "run":
     run()
 elif args.action == "destroy":
-    destroy_project()
+    if has_sudo():
+        destroy_project()
 elif args.action == "watch":
     watch_directory()    
 elif args.action == "logs":
