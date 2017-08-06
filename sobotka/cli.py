@@ -107,7 +107,7 @@ def destroy_project():
     os.system("rm .local_conf.yaml")
 
 
-def sync():
+def push():
     project = get_project_from_local_conf()
 
     file_sync_util.sync_directory(
@@ -136,8 +136,8 @@ elif args.action == "ssh":
     ssh()
 elif args.action == "exec":
     execute_command() 
-elif args.action == "sync":
-    sync()    
+elif args.action == "push":
+    push()    
 elif args.action == "bootstrap":
     bootstrap()  
 elif args.action == "run":

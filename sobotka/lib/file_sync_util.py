@@ -22,7 +22,7 @@ class MyEventHandler(FileSystemEventHandler):
         print("Done")
 
             
-def sync_directory(host, remote_dir):
+def push_directory(host, remote_dir):
     os.system("rsync -r ./ {}:{}".format(host,remote_dir))
 
 def watch_directory(host, remote_dir): 
