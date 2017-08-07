@@ -4,34 +4,18 @@ import os
 
 import yaml
 
-import models
-from lib import aws_util, fabric_util, helpers, file_sync_util, ssh_config_util
-from lib.HostsManager import HostsManager
+from models import Project 
+from aws_manager import AwsManager
+from remote_command_runner import RemoteCommandRunner 
+from file_sync_utility import FileSyncUtility
+from hosts_file_manager import HostsFileManager
+from ssh_config_file_manager import SshConfigFileManager
 
-
-Project = models.Project
-
-parser = argparse.ArgumentParser(description='Sobotka is kewl')
-parser.add_argument('action', default=False, nargs='?')
-parser.add_argument('command', default=None, nargs='?')
-
-
-def get_project_from_local_conf():
-    local_conf = load_local_conf()
-    project_id = local_conf["project_id"]
-    project = Project.get(Project.id == project_id)
-    return project
-
-
-def store_local_conf(project_id):
-    local_conf = {}
-    local_conf["project_id"] = project_id
-    with open('.local_conf.yaml', 'w') as yaml_file:
-        yaml.dump(local_conf, yaml_file, default_flow_style=False)
-
-def ssh():
-    project = get_project_from_local_conf()
-    project.connect()
+##
+## 
+## LOCAL CONF & MANIFEST
+##
+##
 
 def load_local_conf():
     try:
@@ -42,6 +26,14 @@ def load_local_conf():
             "to an existing project but did not find one. " \
             "Try sobotka up to create a new project instead") 
 
+
+def store_local_conf(project_id):
+    local_conf = {}
+    local_conf["project_id"] = project_id
+    with open('.local_conf.yaml', 'w') as yaml_file:
+        yaml.dump(local_conf, yaml_file, default_flow_style=False)
+
+
 def load_manifest():
     try:
         return yaml.safe_load(open("manifest.yaml")) 
@@ -51,11 +43,18 @@ def load_manifest():
             "the Project. Create this file in the root of your " \
             "project or cd to a dorectory where one exists to begin") 
 
+##
+## 
+## CRUD PROJECTS
+##
+##
+
 def create_project():
 
     config = load_manifest()
 
-    instance = aws_util.create_instance(
+    aws_manager = AwsManager()
+    instance = aws_manager.create_instance(
         ImageId=config["project"]["instance"]["image_id"], 
         KeyName=config["project"]["instance"]["key_name"], 
         SecurityGroupIds=config["project"]["instance"]["security_group_ids"],
@@ -66,70 +65,109 @@ def create_project():
         hostname = instance.public_dns_name,
         instance_id = instance.id,
         username = config["project"]["username"],
-        ssh_string = helpers.get_ssh_string(instance, config["project"]["key_file"]),
-        host_string = helpers.get_host_string(instance),
         key_file = config["project"]["key_file"],
         code_dir=config["project"]["code_dir"],
         docker_compose=config["project"]["docker_compose"],
         ip=instance.public_ip_address)
+
+    project.set_ssh_string(instance, config["project"]["key_file"])
+    project.set_host_string(instance)
 
     project.save()
     store_local_conf(project.id)
     print("Successfully created project")
     print(project)
 
-    ssh_config_util.add_host(
+
+    ssh_conf = SshConfigFileManager()
+    ssh_conf.add_host(
         name = config["project"]["shortname"], 
         user = config["project"]["username"], 
         hostname = instance.public_dns_name, 
         key_file = config["project"]["key_file"])
 
 
-    hosts_manager = HostsManager()
-    hosts_manager.add_entry(project.ip, project.shortname)
+    hosts_file = HostsFileManager()
+    hosts_file.add_entry(project.ip, project.shortname)
 
     return project
 
-
-def run():
-    project = get_project_from_local_conf()
-    fabric_util.compose_up(project)
-
-def bootstrap():
-    project = get_project_from_local_conf()
-    fabric_util.bootstrap_compose(project)     
 
 def print_info():
     project = get_project_from_local_conf()
     print(project)
 
-def execute_command():
-    command = args.command
-    project = get_project_from_local_conf()
-    fabric_util.execute_arbitrary_command(project, command)    
-
+def get_project_from_local_conf():
+    local_conf = load_local_conf()
+    project_id = local_conf["project_id"]
+    project = Project.get(Project.id == project_id)
+    return project
 
 def destroy_project():
     project = get_project_from_local_conf()
-    hosts_manager = HostsManager()
-    hosts_manager.remove_entry(project.ip, project.shortname)
+
+    hosts_file = HostsFileManager()
+    hosts_file.remove_entry(project.ip, project.shortname)
+
+    aws_manager = AwsManager()
+    aws_manager.terminate_instance(project.instance_id)
+
+    ssh_conf = SshConfigFileManager()
+    ssh_conf.remove_host(project.shortname)
+
     project.destroy()
     os.system("rm .local_conf.yaml")
 
 
+##
+## 
+## REMOTE COMMAND RUNNER
+##
+##
+
+def run():
+    project = get_project_from_local_conf()
+    runner = RemoteCommandRunner(project)
+    runner.compose_up()
+
+def bootstrap():
+    project = get_project_from_local_conf()
+    runner = RemoteCommandRunner(project)
+    runner.bootstrap_compose() 
+
+def execute_command():
+    command = args.command
+    project = get_project_from_local_conf()
+    runner = RemoteCommandRunner(project)
+    runner.execute_arbitrary_command(command)   
+
+def get_logs():
+    project = get_project_from_local_conf() 
+    runner = RemoteCommandRunner(project)
+    runner.show_compose_logs()
+
+##
+## 
+## FILE SYNC OPERATIONS
+##
+##
+
 def push():
     project = get_project_from_local_conf()
-
-    file_sync_util.push_directory(project)
+    fsync = FileSyncUtility()
+    fsync.push_directory(project)
 
 def watch_directory():
     project = get_project_from_local_conf()
+    fsync = FileSyncUtility()
+    fsync.watch_directory(project)
 
-    file_sync_util.watch_directory(project)
 
-def get_logs():
-    project = get_project_from_local_conf()   
-    fabric_util.compose_logs(project)
+##
+## 
+## CLI HELPER FUCTIONS
+##
+##
 
 def has_sudo():
     if os.getuid() == 0:
@@ -138,7 +176,21 @@ def has_sudo():
         print("This operation requires elevated privelages, please try again with sudo")
         exit(126)   
 
+def ssh():
+    project = get_project_from_local_conf()
+    project.connect()
 
+
+##
+## 
+## MAIN LOGIC 
+##
+##
+
+
+parser = argparse.ArgumentParser(description='Sobotka is kewl')
+parser.add_argument('action', default=False, nargs='?')
+parser.add_argument('command', default=None, nargs='?')
 args = parser.parse_args()
 
 if args.action == "init":
@@ -167,5 +219,3 @@ elif args.action == "logs":
     get_logs()                       
 else:
     print("Not doing anything")    
-
-    

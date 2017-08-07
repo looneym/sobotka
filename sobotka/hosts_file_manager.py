@@ -1,6 +1,6 @@
 from python_hosts import Hosts, HostsEntry
 
-class HostsManager:
+class HostsFileManager:
 
     def __init__(self):
         self.my_hosts = Hosts()
