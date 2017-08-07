@@ -4,6 +4,7 @@ import os
 
 import yaml
 
+import db
 from models import Project 
 from aws_manager import AwsManager
 from remote_command_runner import RemoteCommandRunner 
@@ -187,6 +188,7 @@ def ssh():
 ##
 ##
 
+db.setup(Project)
 
 parser = argparse.ArgumentParser(description='Sobotka is kewl')
 parser.add_argument('action', default=False, nargs='?')

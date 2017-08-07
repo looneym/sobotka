@@ -66,9 +66,3 @@ class Project(Model):
             host_string += hostname
             self.host_string = host_string         
          
-db = SqliteDatabase('sobotka.db')
-db.connect()
-try:
-    db.create_tables([Project])  
-except OperationalError:
-    pass
