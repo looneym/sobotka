@@ -5,7 +5,6 @@ import boto3
 
 class Ec2Manager:
 
-
     def __init__(self):
         self.ec2 = boto3.resource('ec2')
 
@@ -32,16 +31,12 @@ class Ec2Manager:
     def terminate_instance(self, instance_id):
         instance = self.get_instance(instance_id)  
         instance.terminate()  
-
-
-
-    
+  
 class KeyPairManager:
 
     def __init__(self):
         self.KEY_PATH = '~/.ssh/sobotka.pem'
         self.KEY_NAME = 'sobotka'
-
 
     def create_key_pair(self):
         ec2 = boto3.client('ec2')
@@ -55,10 +50,7 @@ class KeyPairManager:
         os.chmod(path, 0600)
         print('Created a new SSH key pair called {} and saved to {}'.format(self.KEY_NAME, self.KEY_PATH))
 
-
-
     def delete_key_pair(self):
         ec2 = boto3.client('ec2')
         ec2.delete_key_pair(KeyName='sobotka')    
-
-        
+   
