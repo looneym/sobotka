@@ -19,7 +19,8 @@ class Project(BaseModel):
     key_file = CharField()
     code_dir = CharField()
     docker_compose = BooleanField()
-    ip = CharField()
+    public_ip = CharField()
+    created_at = CharField()
 
     def destroy(self):
         q = self.delete()
@@ -32,15 +33,20 @@ class Project(BaseModel):
     def __repr__(self):
         return "[PROJECT] id: {}, " \
                "shortname: {}, " \
-               "hostname: {} ".format(
+               "hostname: {}," \
+               "public_ip: {}" \
+               "created_at: {}".format(
                         self.id,
                         self.shortname,
-                        self.hostname)          
+                        self.hostname,
+                        self.public_ip,
+                        self.created_at)          
     @classmethod
-    def list_all(cls):
+    def get_all(cls):
         projects = []
         for project in cls.select():
-            print project
+            projects.append(project)
+        return projects    
 
 ##
 ## 

@@ -1,8 +1,10 @@
 from sys import exit
 import argparse
 import os 
+import datetime
 
 import yaml
+import pytz
 
 import db
 from models import Project 
@@ -69,7 +71,8 @@ def create_project():
         key_file = config["project"]["key_file"],
         code_dir=config["project"]["code_dir"],
         docker_compose=config["project"]["docker_compose"],
-        ip=instance.public_ip_address)
+        public_ip=instance.public_ip_address,
+        created_at=utcnow())
 
     project.set_ssh_string(instance, config["project"]["key_file"])
     project.set_host_string(instance)
@@ -89,7 +92,7 @@ def create_project():
 
 
     hosts_file = HostsFileManager()
-    hosts_file.add_entry(project.ip, project.shortname)
+    hosts_file.add_entry(project.public_ip, project.shortname)
 
     return project
 
@@ -189,6 +192,11 @@ def ssh():
 def create_key_pair():
     kpm = KeyPairManager()
     kpm.create_key_pair()
+
+
+def utcnow():
+    # An ISO 8601 string represention of the current time _including_ timezone (UTC)
+    return datetime.datetime.now(tz=pytz.utc).isoformat()
 
 ##
 ## 
