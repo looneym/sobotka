@@ -72,10 +72,8 @@ def create_project():
         code_dir=config["project"]["code_dir"],
         docker_compose=config["project"]["docker_compose"],
         public_ip=instance.public_ip_address,
-        created_at=utcnow())
-
-    project.set_ssh_string(instance, config["project"]["key_file"])
-    project.set_host_string(instance)
+        created_at=utcnow())  
+    project.set_host_string()
 
     project.save()
     store_local_conf(project.id)
