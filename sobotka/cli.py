@@ -6,7 +6,7 @@ import yaml
 
 import db
 from models import Project 
-from aws_manager import AwsManager
+from aws import Ec2Manager, KeyPairManager
 from remote_command_runner import RemoteCommandRunner 
 from file_sync_utility import FileSyncUtility
 from hosts_file_manager import HostsFileManager
@@ -54,8 +54,8 @@ def create_project():
 
     config = load_manifest()
 
-    aws_manager = AwsManager()
-    instance = aws_manager.create_instance(
+    ec2_manager = Ec2Manager()
+    instance = ec2_manager.create_instance(
         ImageId=config["project"]["instance"]["image_id"], 
         KeyName=config["project"]["instance"]["key_name"], 
         SecurityGroupIds=config["project"]["instance"]["security_group_ids"],
@@ -110,8 +110,8 @@ def destroy_project():
     hosts_file = HostsFileManager()
     hosts_file.remove_entry(project.ip, project.shortname)
 
-    aws_manager = AwsManager()
-    aws_manager.terminate_instance(project.instance_id)
+    ec2_manager = Ec2Manager()
+    ec2_manager.terminate_instance(project.instance_id)
 
     ssh_conf = SshConfigFileManager()
     ssh_conf.remove_host(project.shortname)
@@ -181,6 +181,9 @@ def ssh():
     project = get_project_from_local_conf()
     project.connect()
 
+def create_key_pair():
+    kpm = KeyPairManager()
+    kpm.create_key_pair()
 
 ##
 ## 
@@ -218,6 +221,8 @@ elif args.action == "destroy":
 elif args.action == "watch":
     watch_directory()    
 elif args.action == "logs":
-    get_logs()                       
+    get_logs()    
+elif args.action == "key":
+    create_key_pair()                           
 else:
     print("Not doing anything")    

@@ -1,6 +1,9 @@
+from os.path import expanduser
+import os
+
 import boto3
 
-class AwsManager:
+class Ec2Manager:
 
 
     def __init__(self):
@@ -33,3 +36,29 @@ class AwsManager:
 
 
     
+class KeyPairManager:
+
+    def __init__(self):
+        self.KEY_PATH = '~/.ssh/sobotka.pem'
+        self.KEY_NAME = 'sobotka'
+
+
+    def create_key_pair(self):
+        ec2 = boto3.client('ec2')
+        response = ec2.create_key_pair(KeyName=self.KEY_NAME)
+        key_material = response['KeyMaterial']
+        
+        path = expanduser(self.KEY_PATH)
+        key_file = open(path, 'w') 
+        key_file.write(key_material) 
+        key_file.close() 
+        os.chmod(path, 0600)
+        print('Created a new SSH key pair called {} and saved to {}'.format(self.KEY_NAME, self.KEY_PATH))
+
+
+
+    def delete_key_pair(self):
+        ec2 = boto3.client('ec2')
+        ec2.delete_key_pair(KeyName='sobotka')    
+
+        
