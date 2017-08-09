@@ -195,8 +195,7 @@ def create_key_pair():
 ## MAIN LOGIC 
 ##
 ##
-
-db.setup(Project)
+db.create_tables(Project)
 
 parser = argparse.ArgumentParser(description='Sobotka is kewl')
 parser.add_argument('action', default=False, nargs='?')

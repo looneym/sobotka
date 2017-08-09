@@ -1,8 +1,15 @@
+from os.path import expanduser
 import os
 from peewee import * 
 from subprocess import call
+import db as sobotka_db
+ 
+class BaseModel(Model):
+    class Meta:
+        database = sobotka_db.get_database()
 
-class Project(Model):
+
+class Project(BaseModel):
     shortname = CharField()
     hostname = CharField()
     username = CharField()
