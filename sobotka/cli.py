@@ -131,6 +131,11 @@ def run():
     runner = RemoteCommandRunner(project)
     runner.compose_up()
 
+def stop():
+    project = get_project_from_local_conf()
+    runner = RemoteCommandRunner(project)
+    runner.compose_stop()
+
 def bootstrap():
     project = get_project_from_local_conf()
     runner = RemoteCommandRunner(project)
@@ -215,6 +220,8 @@ elif args.action == "bootstrap":
     bootstrap()  
 elif args.action == "run":
     run()
+elif args.action == "stop":
+    stop()    
 elif args.action == "destroy":
     if has_sudo():
         destroy_project()
