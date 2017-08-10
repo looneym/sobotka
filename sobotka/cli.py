@@ -7,8 +7,9 @@ import yaml
 import pytz
 
 import db
+import helpers
 from models import Project 
-from aws import Ec2Manager, KeyPairManager
+from aws import Ec2Manager
 from remote_command_runner import RemoteCommandRunner 
 from file_sync_utility import FileSyncUtility
 from hosts_file_manager import HostsFileManager
@@ -72,7 +73,7 @@ def create_project():
         code_dir=config["project"]["code_dir"],
         docker_compose=config["project"]["docker_compose"],
         public_ip=instance.public_ip_address,
-        created_at=utcnow())  
+        created_at=helpers.utcnow())  
     project.set_host_string()
 
     project.save()
@@ -170,37 +171,17 @@ def watch_directory():
     fsync.watch_directory(project)
 
 
-##
-## 
-## CLI HELPER FUCTIONS
-##
-##
-
-def has_sudo():
-    if os.getuid() == 0:
-        return True
-    else:
-        print("This operation requires elevated privelages, please try again with sudo")
-        exit(126)   
-
 def ssh():
     project = get_project_from_local_conf()
     project.connect()
 
-def create_key_pair():
-    kpm = KeyPairManager()
-    kpm.create_key_pair()
-
-
-def utcnow():
-    # An ISO 8601 string represention of the current time _including_ timezone (UTC)
-    return datetime.datetime.now(tz=pytz.utc).isoformat()
 
 ##
 ## 
 ## MAIN LOGIC 
 ##
 ##
+
 db.create_tables(Project)
 
 parser = argparse.ArgumentParser(description='Sobotka is kewl')
@@ -209,7 +190,7 @@ parser.add_argument('command', default=None, nargs='?')
 args = parser.parse_args()
 
 if args.action == "init":
-    if has_sudo():
+    if helpers.has_sudo():
         create_project()
 elif args.action == "list":
     Project.list_all()
@@ -228,13 +209,13 @@ elif args.action == "run":
 elif args.action == "stop":
     stop()    
 elif args.action == "destroy":
-    if has_sudo():
+    if helpers.has_sudo():
         destroy_project()
 elif args.action == "watch":
     watch_directory()    
 elif args.action == "logs":
     get_logs()    
 elif args.action == "key":
-    create_key_pair()                           
+    helpers.create_key_pair()                           
 else:
     print("Not doing anything")    
