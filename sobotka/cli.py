@@ -3,11 +3,11 @@ import argparse
 import os 
 import datetime
 
-import yaml
 import pytz
 
 import db
 import helpers
+import yaml_util
 from models import Project 
 from aws import Ec2Manager
 from remote_command_runner import RemoteCommandRunner 
@@ -15,47 +15,10 @@ from file_sync_utility import FileSyncUtility
 from hosts_file_manager import HostsFileManager
 from ssh_config_file_manager import SshConfigFileManager
 
-##
-## 
-## LOCAL CONF & MANIFEST
-##
-##
-
-def load_local_conf():
-    try:
-        return yaml.safe_load(open(".local_conf.yaml")) 
-    except:
-        print( 
-            "Sobotka expected a .local_conf.yaml file to link this directory " \
-            "to an existing project but did not find one. " \
-            "Try sobotka up to create a new project instead") 
-
-
-def store_local_conf(project_id):
-    local_conf = {}
-    local_conf["project_id"] = project_id
-    with open('.local_conf.yaml', 'w') as yaml_file:
-        yaml.dump(local_conf, yaml_file, default_flow_style=False)
-
-
-def load_manifest():
-    try:
-        return yaml.safe_load(open("manifest.yaml")) 
-    except:
-        print( 
-            "Sobotka expected a manifest.yaml file to define " \
-            "the Project. Create this file in the root of your " \
-            "project or cd to a dorectory where one exists to begin") 
-
-##
-## 
-## CRUD PROJECTS
-##
-##
 
 def create_project():
 
-    config = load_manifest()
+    config = yaml_util.load_manifest()
 
     ec2_manager = Ec2Manager()
     instance = ec2_manager.create_instance(
@@ -77,7 +40,7 @@ def create_project():
     project.set_host_string()
 
     project.save()
-    store_local_conf(project.id)
+    yaml_util.store_local_conf(project.id)
     print("Successfully created project")
     print(project)
 
@@ -101,7 +64,7 @@ def print_info():
     print(project)
 
 def get_project_from_local_conf():
-    local_conf = load_local_conf()
+    local_conf = yaml_util.load_local_conf()
     project_id = local_conf["project_id"]
     project = Project.get(Project.id == project_id)
     return project
@@ -122,11 +85,10 @@ def destroy_project():
     os.system("rm .local_conf.yaml")
 
 
-##
-## 
-## REMOTE COMMAND RUNNER
-##
-##
+def ssh():
+    project = get_project_from_local_conf()
+    project.connect()    
+
 
 def run():
     project = get_project_from_local_conf()
@@ -154,11 +116,6 @@ def get_logs():
     runner = RemoteCommandRunner(project)
     runner.show_compose_logs()
 
-##
-## 
-## FILE SYNC OPERATIONS
-##
-##
 
 def push():
     project = get_project_from_local_conf()
@@ -170,17 +127,6 @@ def watch_directory():
     fsync = FileSyncUtility()
     fsync.watch_directory(project)
 
-
-def ssh():
-    project = get_project_from_local_conf()
-    project.connect()
-
-
-##
-## 
-## MAIN LOGIC 
-##
-##
 
 db.create_tables(Project)
 
