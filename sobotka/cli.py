@@ -109,7 +109,7 @@ def destroy_project():
     project = get_project_from_local_conf()
 
     hosts_file = HostsFileManager()
-    hosts_file.remove_entry(project.ip, project.shortname)
+    hosts_file.remove_entry(project.public_ip, project.shortname)
 
     ec2_manager = Ec2Manager()
     ec2_manager.terminate_instance(project.instance_id)
