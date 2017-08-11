@@ -121,6 +121,39 @@ def watch_directory():
     fsync = FileSyncUtility()
     fsync.watch_directory(project)
 
+def dispatch():
+    if args.action == "init":
+        if helpers.has_sudo():
+            create_project()
+    elif args.action == "list":
+        Project.list_all()
+    elif args.action == "info":
+        print_info()
+    elif args.action == "ssh":
+        ssh()
+    elif args.action == "exec":
+        execute_command() 
+    elif args.action == "push":
+        push()    
+    elif args.action == "bootstrap":
+        bootstrap()  
+    elif args.action == "run":
+        run()
+    elif args.action == "stop":
+        stop()    
+    elif args.action == "destroy":
+        if helpers.has_sudo():
+            destroy_project()
+    elif args.action == "watch":
+        watch_directory()    
+    elif args.action == "logs":
+        get_logs()    
+    elif args.action == "key":
+        helpers.create_key_pair()                           
+    else:
+        print("Please specify an action")    
+
+
 db.create_tables(Project)
 
 description_string = (
@@ -132,33 +165,6 @@ parser.add_argument('action')
 parser.add_argument('command', nargs='?')
 args = parser.parse_args()
 
-if args.action == "init":
-    if helpers.has_sudo():
-        create_project()
-elif args.action == "list":
-    Project.list_all()
-elif args.action == "info":
-    print_info()
-elif args.action == "ssh":
-    ssh()
-elif args.action == "exec":
-    execute_command() 
-elif args.action == "push":
-    push()    
-elif args.action == "bootstrap":
-    bootstrap()  
-elif args.action == "run":
-    run()
-elif args.action == "stop":
-    stop()    
-elif args.action == "destroy":
-    if helpers.has_sudo():
-        destroy_project()
-elif args.action == "watch":
-    watch_directory()    
-elif args.action == "logs":
-    get_logs()    
-elif args.action == "key":
-    helpers.create_key_pair()                           
-else:
-    print("Please specify an action")    
+if __name__ == "__main__":
+    dispatch()
+    
