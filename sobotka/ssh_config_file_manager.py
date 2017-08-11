@@ -6,6 +6,13 @@ class SshConfigFileManager:
     def add_host(self, name, user, hostname, key_file):
         sconfig = StormParser(expanduser("~/.ssh/config"))
         sconfig.load()
+
+        # Remove existig hosts with that name to avoid dupes
+        try:
+            sconfig.delete_host(name)
+        except ValueError:
+            # Host not found
+            pass    
         sconfig.add_host(name, {
             'user': user,
             'hostname': hostname,
