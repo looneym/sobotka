@@ -1,9 +1,6 @@
 from sys import exit
 import argparse
 import os 
-import datetime
-
-import pytz
 
 import db
 import helpers
@@ -58,7 +55,6 @@ def create_project():
 
     return project
 
-
 def print_info():
     project = get_project_from_local_conf()
     print(project)
@@ -83,7 +79,6 @@ def destroy_project():
 
     project.destroy()
     os.system("rm .local_conf.yaml")
-
 
 def ssh():
     project = get_project_from_local_conf()
@@ -116,7 +111,6 @@ def get_logs():
     runner = RemoteCommandRunner(project)
     runner.show_compose_logs()
 
-
 def push():
     project = get_project_from_local_conf()
     fsync = FileSyncUtility()
@@ -127,12 +121,15 @@ def watch_directory():
     fsync = FileSyncUtility()
     fsync.watch_directory(project)
 
-
 db.create_tables(Project)
 
-parser = argparse.ArgumentParser(description='Sobotka is kewl')
-parser.add_argument('action', default=False, nargs='?')
-parser.add_argument('command', default=None, nargs='?')
+description_string = (
+    'Manage development environments on AWS: '
+    'https://github.com/looneym/sobotka/blob/master/docs/usage.md'
+    )
+parser = argparse.ArgumentParser(description=description_string)
+parser.add_argument('action')
+parser.add_argument('command', nargs='?')
 args = parser.parse_args()
 
 if args.action == "init":
@@ -164,4 +161,4 @@ elif args.action == "logs":
 elif args.action == "key":
     helpers.create_key_pair()                           
 else:
-    print("Not doing anything")    
+    print("Please specify an action")    
