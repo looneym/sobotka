@@ -7,13 +7,13 @@ here = path.abspath(path.dirname(__file__))
 setup(
     name='sobotka',
 
-    version='0.0.1',
+    version='0.0.2',
 
     description='Manage development environments on AWS',
 
     url='https://github.com/looneym/sobotka',
 
-    author='Micheál Looney',
+    author='Micheal Looney',
     author_email='looneymicheal+sobotka@gmail.com',
 
     license='MIT',
@@ -45,7 +45,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'sobotka = sobotka:cli:dispatch',
+            'sobotka = cli',
         ],
     },
 )
