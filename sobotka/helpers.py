@@ -18,6 +18,6 @@ def utcnow():
     # An ISO 8601 string represention of the current time _including_ timezone (UTC)
     return datetime.datetime.now(tz=pytz.utc).isoformat()        
 
-def create_key_pair():
+def create_key_pair(overwrite):
     kpm = KeyPairManager()
-    kpm.create_key_pair()    
+    kpm.create_key_pair(overwrite)    

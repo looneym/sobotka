@@ -12,7 +12,9 @@ from file_sync_utility import FileSyncUtility
 from hosts_file_manager import HostsFileManager
 from ssh_config_file_manager import SshConfigFileManager
 
-
+def create_key_pair(oveerride):
+     helpers.create_key_pair(override)
+                                
 def create_project():
 
     config = yaml_util.load_manifest()
@@ -100,8 +102,7 @@ def bootstrap():
     runner = RemoteCommandRunner(project)
     runner.bootstrap_compose() 
 
-def execute_command():
-    command = args.command
+def execute_command(command):
     project = get_project_from_local_conf()
     runner = RemoteCommandRunner(project)
     runner.execute_arbitrary_command(command)   
@@ -121,7 +122,20 @@ def watch_directory():
     fsync = FileSyncUtility()
     fsync.watch_directory(project)
 
-def dispatch():
+def main():
+
+    db.create_tables(Project)
+
+    description_string = (
+        'Manage development environments on AWS: '
+        'https://github.com/looneym/sobotka/blob/master/docs/usage.md'
+        )
+    parser = argparse.ArgumentParser(description=description_string)
+    parser.add_argument('action')
+    parser.add_argument('command', nargs='?')
+    parser.add_argument("-o", "--overwrite", help="Overwrite existing key pair", action="store_true")
+    args = parser.parse_args()
+
     if args.action == "init":
         if helpers.has_sudo():
             create_project()
@@ -132,7 +146,7 @@ def dispatch():
     elif args.action == "ssh":
         ssh()
     elif args.action == "exec":
-        execute_command() 
+        execute_command(args.command) 
     elif args.action == "push":
         push()    
     elif args.action == "bootstrap":
@@ -149,22 +163,10 @@ def dispatch():
     elif args.action == "logs":
         get_logs()    
     elif args.action == "key":
-        helpers.create_key_pair()                           
+      helpers.create_key_pair(args.overwrite)
     else:
         print("Please specify an action")    
 
-
-db.create_tables(Project)
-
-description_string = (
-    'Manage development environments on AWS: '
-    'https://github.com/looneym/sobotka/blob/master/docs/usage.md'
-    )
-parser = argparse.ArgumentParser(description=description_string)
-parser.add_argument('action')
-parser.add_argument('command', nargs='?')
-args = parser.parse_args()
-
 if __name__ == "__main__":
-    dispatch()
+    main()
     

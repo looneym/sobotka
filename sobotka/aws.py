@@ -38,7 +38,10 @@ class KeyPairManager:
         self.KEY_PATH = '~/.ssh/sobotka.pem'
         self.KEY_NAME = 'sobotka'
 
-    def create_key_pair(self):
+    def create_key_pair(self, overwrite):
+        if overwrite:
+            self.delete_key_pair()
+            
         ec2 = boto3.client('ec2')
         response = ec2.create_key_pair(KeyName=self.KEY_NAME)
         key_material = response['KeyMaterial']
