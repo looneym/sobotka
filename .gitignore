@@ -3,3 +3,5 @@
 /tmp/
 /venv/
 .local_conf.yaml
+dist/
+sobotka.egg-info/

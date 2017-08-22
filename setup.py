@@ -7,7 +7,7 @@ here = path.abspath(path.dirname(__file__))
 setup(
     name='sobotka',
 
-    version='0.0.2',
+    version='0.0.7',
 
     description='Manage development environments on AWS',
 
@@ -45,7 +45,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'sobotka = cli',
+            'sobotka = sobotka.cli:main',
         ],
     },
 )
