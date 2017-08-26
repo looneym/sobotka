@@ -78,18 +78,3 @@ Since Sobotka requires no VM on the local machine and minimal configuration it's
 
 Please open an [issue](https://github.com/looneym/sobotka/issues)
 
-### Packaging and upload to PyPi
-Increment version number and then:
-
-```
-python setup.py sdist
-twine upload dist/*
-```
-
-Pip can be weird about picking up new versions so:
-
-```
-pip install -I  --no-cache-dir sobotka==0.0.7
-```
-
-Replace version number as required
