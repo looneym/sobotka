@@ -7,7 +7,7 @@ here = path.abspath(path.dirname(__file__))
 setup(
     name='sobotka',
 
-    version='0.0.7',
+    version='0.0.8',
 
     description='Manage development environments on AWS',
 
