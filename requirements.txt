@@ -48,7 +48,7 @@ stormssh==0.6.9
 termcolor==1.1.0
 tqdm==4.15.0
 twine==1.9.1
-urllib3==1.22
+urllib3==1.26.5
 watchdog==0.8.3
 Werkzeug==0.12.2
 win-inet-pton==1.0.1
